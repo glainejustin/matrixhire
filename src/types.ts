@@ -13,6 +13,7 @@ export interface JobListing {
   matchScore?: number; // Calculated dynamically or seeded
   sourceUrl?: string; // Live job link
   isLiveScraped?: boolean; // Scraped from web marker
+  isRobustLocalBackup?: boolean; // Robust live-generated simulated backup marker
 }
 
 export interface JobApplication {

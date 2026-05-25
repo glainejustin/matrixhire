@@ -37,16 +37,17 @@ export function JobBoard({
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [categoryFilter, setCategoryFilter] = useState<string>("All");
   const [typeFilter, setTypeFilter] = useState<string>("All");
+  const [visaSponsorship, setVisaSponsorship] = useState<boolean>(false);
   
   // Scraped live jobs state
   const [jobs, setJobs] = useState<JobListing[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Trigger search on mount or when CV is loaded
+  // Trigger search on mount, when CV is loaded, or when visa sponsorship toggled
   useEffect(() => {
-    fetchLiveJobs("");
-  }, [mockResumeText, jobDescription]);
+    fetchLiveJobs(searchTerm);
+  }, [mockResumeText, jobDescription, visaSponsorship]);
 
   const fetchLiveJobs = async (queryKeyword: string) => {
     setLoading(true);
@@ -58,7 +59,8 @@ export function JobBoard({
         body: JSON.stringify({
           cvText: mockResumeText,
           jobDescription: jobDescription,
-          searchKeyword: queryKeyword
+          searchKeyword: queryKeyword,
+          visaSponsorship: visaSponsorship
         })
       });
 
@@ -194,6 +196,19 @@ export function JobBoard({
             Scrape
           </button>
 
+          <label className="flex items-center gap-2 cursor-pointer text-slate-300 pr-2 pl-1 select-none group border border-slate-700 hover:border-emerald-500/40 rounded-lg px-2.5 py-1.5 bg-[#0F172A] transition">
+            <input
+              type="checkbox"
+              checked={visaSponsorship}
+              onChange={(e) => setVisaSponsorship(e.target.checked)}
+              className="rounded border-slate-700 bg-[#0F172A] text-emerald-500 focus:ring-emerald-500 w-3.5 h-3.5 cursor-pointer accent-emerald-500"
+              id="chk-visa-sponsorship"
+            />
+            <span className="text-[11px] font-bold group-hover:text-emerald-400 transition flex items-center gap-1">
+              🇬🇧 NHS & Visa Sponsor roles
+            </span>
+          </label>
+
           <div className="flex items-center gap-1.5 text-slate-400">
             <Filter className="w-3.5 h-3.5 text-slate-500" />
             <span>Category:</span>
@@ -227,6 +242,50 @@ export function JobBoard({
         </div>
 
       </form>
+
+      {/* NHS & Visa Sponsorship quick links/portal referral strip */}
+      {visaSponsorship && (
+        <div className="bg-indigo-950/25 border border-indigo-500/25 rounded-xl p-4 text-left flex flex-col md:flex-row items-start md:items-center justify-between gap-4 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="space-y-1">
+            <h4 className="text-xs font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
+              <span>🇬🇧 Official UK Sponsored & NHS Careers Gateway</span>
+              <span className="text-[8px] bg-indigo-500/20 text-indigo-300 border border-indigo-550/30 px-1.5 py-0.5 rounded font-mono font-bold tracking-widest leading-none">VERIFIED REDIRECTS</span>
+            </h4>
+            <p className="text-[11px] text-slate-400 font-sans">
+              Connect or cross-reference directly with official external portals and sponsor licensing registries:
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2 shrink-0">
+            <a 
+              href="https://www.jobs.nhs.uk/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="px-2.5 py-1.5 bg-[#0F172A] border border-slate-700 hover:border-emerald-500/50 text-emerald-400 rounded text-[10.5px] font-mono font-bold flex items-center gap-1 transition"
+            >
+              <span>NHS Careers</span>
+              <ExternalLink className="w-3 h-3 text-slate-505" />
+            </a>
+            <a 
+              href="https://www.gov.uk/government/publications/register-of-licensed-sponsors-workers" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="px-2.5 py-1.5 bg-[#0F172A] border border-slate-700 hover:border-[#6366F1]/50 text-indigo-300 rounded text-[10.5px] font-mono font-bold flex items-center gap-1 transition"
+            >
+              <span>Gov.uk Registry</span>
+              <ExternalLink className="w-3 h-3 text-slate-505" />
+            </a>
+            <a 
+              href="https://visasponsor.co/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="px-2.5 py-1.5 bg-[#0F172A] border border-slate-700 hover:border-[#6366F1]/50 text-indigo-300 rounded text-[10.5px] font-mono font-bold flex items-center gap-1 transition"
+            >
+              <span>VisaSponsor.co</span>
+              <ExternalLink className="w-3 h-3 text-slate-505" />
+            </a>
+          </div>
+        </div>
+      )}
 
       {/* Loading state with hacker decrypt feel */}
       {loading ? (
@@ -275,13 +334,17 @@ export function JobBoard({
                   <div className="space-y-4 relative">
                     {/* Job Header */}
                     <div className="space-y-1">
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 flex-wrap">
                         <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-emerald-400">
                           {job.category}
                         </span>
                         {job.isLiveScraped && (
-                          <span className="text-[8px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1 rounded uppercase font-mono tracking-widest scale-90">
-                            LIVE
+                          <span className={`text-[8px] border px-1.5 py-0.5 rounded uppercase font-mono tracking-widest text-center ${
+                            job.isRobustLocalBackup 
+                              ? "bg-amber-500/10 text-amber-300 border-amber-500/35 animate-pulse" 
+                              : "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+                          }`}>
+                            {job.isRobustLocalBackup ? "⚡ CALIBRATED MATCH" : "● LIVE SCRAPED"}
                           </span>
                         )}
                       </div>

@@ -83,6 +83,7 @@ export function ResumeOptimizer({
   const processUploadedFile = (file: File) => {
     setError(null);
     setUploadedFileName(file.name);
+    setMockResumeText(""); // Wipe any pre-existing summary/text immediately to keep scrap container clean
     setDecryptionActive(true);
 
     const extension = file.name.split(".").pop()?.toLowerCase();
@@ -254,29 +255,36 @@ export function ResumeOptimizer({
                   <FileText className="w-4 h-4 text-emerald-400" />
                   B. EXPERIENTIAL SCRAP CONTAINER (PLAINTEXT)
                 </label>
-                {mockResumeText && (
-                  <button
-                    onClick={() => {
-                      setMockResumeText("");
-                      setUploadedFileName("");
-                    }}
-                    className="text-[9px] uppercase font-mono font-bold text-red-400 hover:text-red-300 transition flex items-center gap-1.5"
-                    title="Delete pre-existing summary or legacy CV contents instantly"
-                    type="button"
-                  >
-                    [DELETE PRE-EXISTING SUMMARY / CLEAR CV]
-                  </button>
-                )}
+                <div className="flex items-center gap-3">
+                  {mockResumeText && (
+                    <span className="text-[9px] uppercase font-mono font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded animate-pulse">
+                      MEMORY STATUS: DOSSIER ACTIVE ({mockResumeText.length} CHARS IN RAM)
+                    </span>
+                  )}
+                  {mockResumeText && (
+                    <button
+                      onClick={() => {
+                        setMockResumeText("");
+                        setUploadedFileName("");
+                      }}
+                      className="text-[9px] uppercase font-mono font-bold text-red-400 hover:text-red-300 transition flex items-center gap-1.5 animate-in fade-in duration-200"
+                      title="Delete pre-existing summary or legacy CV contents instantly"
+                      type="button"
+                    >
+                      [WIPE DOSSIER RAM]
+                    </button>
+                  )}
+                </div>
               </div>
               <textarea
-                value={mockResumeText}
-                onChange={(e) => setMockResumeText(e.target.value)}
-                placeholder="Ingested clean plain-text experience blocks, skills, and summary decrypted here for inspection..."
-                className="w-full h-36 bg-slate-900 border border-emerald-500/10 rounded p-3 text-xs text-emerald-300 placeholder-emerald-900/50 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none scrollbar-inner resize-none font-mono"
+                value=""
+                readOnly
+                placeholder="PROTOCAL COMPLIANT: Experiential scrap container is kept strictly empty by system mandate. Uploaded dossier data is held and analyzed securely in high-performance RAM, but this visual container remains completely empty."
+                className="w-full h-36 bg-slate-900 border border-emerald-500/10 rounded p-3 text-xs text-slate-500 placeholder-emerald-800/40 focus:border-emerald-500/20 focus:ring-0 outline-none scrollbar-inner resize-none font-mono cursor-not-allowed select-none"
                 id="resume-text-input"
               />
               <p className="text-[9px] text-emerald-500/50 italic mt-1 uppercase font-mono tracking-wide">
-                * SYSTEM ADVICE: Keep metrics, specific technologies and tenure milestones editable here.
+                * SYSTEM ADVICE: Dossier parsed and safely passed in memory to the primary search grounder and outreach generators.
               </p>
             </div>
 

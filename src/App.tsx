@@ -33,6 +33,14 @@ export default function App() {
   // Local storage synchronized mock resume state (cleared of preset dummy examples)
   const [mockResumeText, setMockResumeText] = useState<string>(() => {
     const cached = localStorage.getItem("job_hunter_resume");
+    if (cached && (
+      cached.toLowerCase().includes("highly qualified software") || 
+      cached.toLowerCase().includes("experienced software engineer") ||
+      cached.toLowerCase().includes("summary") ||
+      cached.trim().length === 0
+    )) {
+      return "";
+    }
     return cached || "";
   });
 
@@ -331,7 +339,7 @@ export default function App() {
 
       {/* Cyber Compliance Status Footer */}
       <footer className="bg-slate-950 text-center py-4 border-t border-emerald-500/20 text-[10px] text-emerald-500/50 font-mono relative z-20" id="mainframe-footer">
-        © 2026 Matrix Hire • Neural Encryption Protocol 45.1.B • SECURED FEED • Powered by Google Gemini-3.5-flash standard
+        © 2026 Matrix Hire • Neural Encryption Protocol 45.1.B • SECURED FEED
       </footer>
     </div>
   );
