@@ -1,0 +1,6 @@
+{
+  "name": "Matrix Hire",
+  "description": "An immersive, cyberpunk Matrix-themed recruitment suite featuring a live face-cam AI Mock Interview Simulator, drag-and-drop ATS resume analysis with text parsing, target outreach generators, and real-time terminal diagnostics.",
+  "requestFramePermissions": ["camera", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

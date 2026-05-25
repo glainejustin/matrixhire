@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script>
+      // Early safety patch for fetch to intercept and prevent "Cannot set property fetch of #<Window> which has only a getter"
+      (function() {
+        try {
+          const originalFetch = window.fetch;
+          let activeFetch = originalFetch;
+          
+          function patch(target) {
+            try {
+              Object.defineProperty(target, "fetch", {
+                get() { return activeFetch; },
+                set(v) { activeFetch = v; },
+                configurable: true,
+                enumerable: true
+              });
+              return true;
+            } catch (err) {
+              return false;
+            }
+          }
+
+          if (!patch(window)) {
+            if (!patch(Window.prototype)) {
+              if (!patch(globalThis)) {
+                // Last-resort fallback: rewrite target via prototype chain
+                try {
+                  const proto = Object.getPrototypeOf(window);
+                  if (proto) {
+                    Object.defineProperty(proto, "fetch", {
+                      get() { return activeFetch; },
+                      set(v) { activeFetch = v; },
+                      configurable: true,
+                      enumerable: true
+                    });
+                  }
+                } catch (e) {
+                  console.warn("All attempts to patch window.fetch setter failed.");
+                }
+              }
+            }
+          }
+        } catch (error) {
+          console.warn("Early fetch safety patch failed to initialize:", error);
+        }
+      })();
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Google AI Studio App</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
